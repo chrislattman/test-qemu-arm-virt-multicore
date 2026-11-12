@@ -1,13 +1,13 @@
 # Bare metal C example for QEMU ARM "virt" machine with two Cortex-A53 cores
 
-A two-core version of [test-qemu-arm-virt](../test-qemu-arm-virt). Each core runs its own image from its own private 2 MB block of RAM, and has its own MMU translation tables that map only its own block, a shared block and (core 0 only) the devices. If either core touches the other core's block, it gets a translation fault.
+Each core runs its own image from its own private 2 MB block of RAM, and has its own MMU translation tables that map only its own block, a shared block and (core 0 only) the devices. If either core touches the other core's block, it gets a translation fault.
 
 - Core 0 owns the UART and the GIC. It runs the same Hello/World loop and SGI cascade as the single-core version, starts core 1, and prints core 1's messages.
 - Core 1 uses no peripherals. It posts a message to a mailbox in the shared block every 3 seconds, and core 0 prints it after each loop iteration (every 2 seconds), so core 1's messages can appear up to 2 seconds late.
 
 ## Prerequisites
 
-Same as [test-qemu-arm-virt](../test-qemu-arm-virt): `sudo apt install qemu-system-arm cmake gdb-multiarch`, plus Arm's `aarch64-none-elf` toolchain on your `PATH` (see that project's README for where to download it).
+Run `sudo apt install qemu-system-arm cmake gdb-multiarch`, and put Arm's `aarch64-none-elf` toolchain on your `PATH`. Ubuntu doesn't package it; download **AArch64 bare-metal target (aarch64-none-elf)** under **x86_64 Linux hosted cross toolchains** from https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads, extract it, and add its `bin` directory to your `PATH`.
 
 ## Build and run
 
@@ -57,4 +57,3 @@ The addresses are set in `CMakeLists.txt`, which passes them to both the compile
 - If a watchdog timer is desired, the Intel 6300ESB `-device i6300esb` PCIe device is available to add to the `qemu-system-aarch64` command
 - If you want to read UART messages from a /dev file, replace the `-serial` option in `CMakeLists.txt` with `-serial pty`, then run `screen /dev/pts/?` where ? is the value given by QEMU
 - The linker warns that each image "has a LOAD segment with RWX permissions". That's expected, since `linker.ld` puts code and data in one segment, as in the single-core version
-- See [test-qemu-arm-virt](../test-qemu-arm-virt) for the compiler flags you'd need with Ubuntu's `aarch64-linux-gnu-gcc` instead
