@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C: Remote Attach",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/core0.elf",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb-multiarch",
+            "miDebuggerServerAddress": "localhost:1234",
+            "postRemoteConnectCommands": [
+                {
+                    "text": "add-symbol-file ${workspaceFolder}/build/core1.elf"
+                },
+                {
+                    "text": "set scheduler-locking step"
+                }
+            ]
+        }
+    ]
+}
